@@ -1,0 +1,47 @@
+# Node modules e diretórios de build
+node_modules/
+dist/
+build/
+
+# Ignora node_modules e diretórios de build específicos para backend e frontend
+backend/node_modules/
+backend/dist/
+backend/build/
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# Arquivos de log
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cache do TypeScript
+*.tsbuildinfo
+
+# Configuração do ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Arquivos de lock e cache
+package-lock.json
+yarn.lock
+.pnpm-debug.log*
+
+# Arquivos específicos de IDE e sistema operacional
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Arquivos de configuração temporários
+temp/
+tmp/
+
+# Outros arquivos que você pode querer ignorar
+/.eslintcache
+/prettier.cache
