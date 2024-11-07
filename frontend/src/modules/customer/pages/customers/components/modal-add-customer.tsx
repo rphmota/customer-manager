@@ -12,50 +12,61 @@ import {
   Input,
   FormControl,
   FormLabel,
+  ModalProps,
 } from '@chakra-ui/react'
 import { z } from 'zod'
 import { api } from '../../../../global/api/api'
 
 const customerSchema = z.object({
-  nome: z.string().min(1, 'Nome é obrigatório'),
-  salario: z.number().positive('Salário deve ser um número positivo'),
-  empresa: z.number().positive('Valor da empresa deve ser um número positivo'),
+  name: z.string().min(1, 'Nome é obrigatório'),
+  salary: z.number().positive('Salário deve ser um número positivo'),
+  company_price: z
+    .number()
+    .positive('Valor da empresa deve ser um número positivo'),
 })
 
-export function ModalAddCustomer({ isOpen, onClose }) {
+export function ModalAddCustomer({
+  isOpen,
+  onClose,
+}: Omit<ModalProps, 'children'>) {
   const toast = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
-    nome: '',
-    salario: '',
-    empresa: '',
+    name: '',
+    salary: '',
+    company_price: '',
   })
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSubmit = async () => {
     try {
+      // Validação e conversão dos dados
       const validatedData = customerSchema.parse({
-        nome: formData.nome,
-        salario: parseFloat(formData.salario),
-        empresa: parseFloat(formData.empresa),
+        name: formData.name,
+        salary: parseFloat(formData.salary),
+        company_price: parseFloat(formData.company_price),
       })
 
       setIsSubmitting(true)
-      await api.post('/clientes', validatedData)
+      await api.post('/customers', validatedData)
 
       toast({
         title: 'Cliente criado!',
-        description: 'O cliente foi criado com sucesso.',
+        description: 'O cliente foi criado com sucesso recarregando pagina...',
         status: 'success',
         duration: 5000,
         isClosable: true,
       })
 
       onClose()
+
+      setTimeout(() => {
+        window.location.href = '/home'
+      }, 2000)
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast({
@@ -90,8 +101,8 @@ export function ModalAddCustomer({ isOpen, onClose }) {
             <FormLabel>Digite o nome:</FormLabel>
             <Input
               placeholder="Digite o nome"
-              name="nome"
-              value={formData.nome}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
             />
           </FormControl>
@@ -100,9 +111,9 @@ export function ModalAddCustomer({ isOpen, onClose }) {
             <FormLabel>Digite o salário:</FormLabel>
             <Input
               placeholder="Digite o salário"
-              name="salario"
+              name="salary"
               type="number"
-              value={formData.salario}
+              value={formData.salary}
               onChange={handleChange}
             />
           </FormControl>
@@ -111,9 +122,9 @@ export function ModalAddCustomer({ isOpen, onClose }) {
             <FormLabel>Digite o valor da empresa:</FormLabel>
             <Input
               placeholder="Digite o valor da empresa"
-              name="empresa"
+              name="company_price"
               type="number"
-              value={formData.empresa}
+              value={formData.company_price}
               onChange={handleChange}
             />
           </FormControl>

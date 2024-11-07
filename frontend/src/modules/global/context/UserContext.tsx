@@ -1,18 +1,18 @@
 // UserContext.tsx
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, ReactNode } from 'react'
 
 interface UserContextType {
-  nome: string
-  setNome: (nome: string) => void
+  name: string
+  setNome: (name: string) => void
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [nome, setNome] = useState('')
+  const [name, setNome] = useState('')
 
   return (
-    <UserContext.Provider value={{ nome, setNome }}>
+    <UserContext.Provider value={{ name, setNome }}>
       {children}
     </UserContext.Provider>
   )

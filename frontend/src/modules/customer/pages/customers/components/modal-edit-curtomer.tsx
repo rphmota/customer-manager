@@ -14,49 +14,51 @@ import {
   FormLabel,
 } from '@chakra-ui/react'
 import { z } from 'zod'
+import { api } from '../../../../global/api/api'
 
 const customerSchema = z.object({
-  nome: z.string().min(1, 'Nome é obrigatório'),
-  salario: z.number().positive('Salário deve ser um número positivo'),
-  empresa: z.number().positive('Valor da empresa deve ser um número positivo'),
+  name: z.string().min(1, 'Nome é obrigatório'),
+  salary: z.number().positive('Salário deve ser um número positivo'),
+  company_price: z
+    .number()
+    .positive('Valor da company_price deve ser um número positivo'),
 })
 
 interface ModalEditCustomerProps {
   isOpen: boolean
   onClose: () => void
   cliente: {
-    nome: string
-    salario: number
-    empresa: number
+    id: number
+    name: string
+    salary: number
+    company_price: number
   }
-  onSave: (data: any) => void
 }
 
 export function ModalEditCustomer({
   isOpen,
   onClose,
   cliente,
-  onSave,
 }: ModalEditCustomerProps) {
   const toast = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
-    nome: '',
-    salario: '',
-    empresa: '',
+    name: '',
+    salary: '',
+    company_price: '',
   })
 
   useEffect(() => {
     if (cliente) {
       setFormData({
-        nome: cliente.nome,
-        salario: cliente.salario.toFixed(2),
-        empresa: cliente.empresa.toFixed(2),
+        name: cliente.name,
+        salary: cliente.salary.toFixed(2),
+        company_price: cliente.company_price.toFixed(2),
       })
     }
   }, [cliente])
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
@@ -64,13 +66,16 @@ export function ModalEditCustomer({
   const handleSubmit = async () => {
     try {
       const validatedData = customerSchema.parse({
-        nome: formData.nome,
-        salario: parseFloat(formData.salario),
-        empresa: parseFloat(formData.empresa),
+        name: formData.name,
+        salary: parseFloat(formData.salary),
+        company_price: parseFloat(formData.company_price),
       })
 
       setIsSubmitting(true)
-      onSave(validatedData)
+      await api.post(`/customers`, {
+        id: cliente.id,
+        ...validatedData,
+      })
 
       toast({
         title: 'Cliente atualizado!',
@@ -81,6 +86,10 @@ export function ModalEditCustomer({
       })
 
       onClose()
+
+      setTimeout(() => {
+        window.location.href = '/home'
+      }, 2000)
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast({
@@ -115,8 +124,8 @@ export function ModalEditCustomer({
             <FormLabel>Nome:</FormLabel>
             <Input
               placeholder="Digite o nome"
-              name="nome"
-              value={formData.nome}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
             />
           </FormControl>
@@ -125,20 +134,20 @@ export function ModalEditCustomer({
             <FormLabel>Salário:</FormLabel>
             <Input
               placeholder="Digite o salário"
-              name="salario"
+              name="salary"
               type="number"
-              value={formData.salario}
+              value={formData.salary}
               onChange={handleChange}
             />
           </FormControl>
 
           <FormControl mb={3}>
-            <FormLabel>Valor da empresa:</FormLabel>
+            <FormLabel>Valor da company_price:</FormLabel>
             <Input
-              placeholder="Digite o valor da empresa"
-              name="empresa"
+              placeholder="Digite o valor da company_price"
+              name="company_price"
               type="number"
-              value={formData.empresa}
+              value={formData.company_price}
               onChange={handleChange}
             />
           </FormControl>

@@ -4,9 +4,9 @@ import { ICustomer } from '../../../types/ICostumer'
 
 type CardProps = {
   id: ICustomer['id']
-  nome: ICustomer['nome']
-  salario: ICustomer['salario']
-  empresa: ICustomer['empresa']
+  name: ICustomer['name']
+  salary: ICustomer['salary']
+  company_price: ICustomer['company_price']
   onDelete: () => void
   onEdit: () => void
   onSelect: () => void
@@ -14,10 +14,9 @@ type CardProps = {
 }
 
 export function Card({
-  id,
-  nome,
-  salario,
-  empresa,
+  name,
+  salary,
+  company_price,
   onDelete,
   onEdit,
   onSelect,
@@ -38,17 +37,22 @@ export function Card({
       align="center"
     >
       <Heading size="md" fontWeight="bold" textAlign="center">
-        {nome}
+        {name}
       </Heading>
 
       <Box textAlign="center" mt={2}>
         <Text fontSize="md">
           Salário: R$
-          {salario.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          {salary != null
+            ? salary.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+            : '0,00'}
         </Text>
         <Text fontSize="md">
           Empresa: R$
-          {empresa.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+          {Number(company_price).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}
         </Text>
       </Box>
 

@@ -1,32 +1,53 @@
-import { Flex, Heading, Button, Select, Box } from '@chakra-ui/react'
+import { useEffect, useState } from 'react'
+import {
+  Flex,
+  Heading,
+  Button,
+  Select,
+  Box,
+  Spinner,
+  Text,
+} from '@chakra-ui/react'
 import { Card } from '../components/card'
 import { ModalAddCustomer } from '../components/modal-add-customer'
 import { ModalDeleteCustomer } from '../components/modal-delete-customer'
 import { ModalEditCustomer } from '../components/modal-edit-curtomer'
-import { useState } from 'react'
 import { ICustomer } from '../../../types/ICostumer'
+import { api } from '../../../../global/api/api'
 
 type CustomerProps = {
   onSelectCliente: (cliente: ICustomer) => void
 }
 
 export const Customer = ({ onSelectCliente }: CustomerProps) => {
-  const clientesMock: ICustomer[] = Array.from({ length: 78 }, (_, index) => ({
-    id: index + 1,
-    nome: 'Eduardo',
-    salario: 3500.0 + index * 100,
-    empresa: 120000.0 + index * 500,
-  }))
-
+  const [clientes, setClientes] = useState<ICustomer[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [clientesPorPagina, setClientesPorPagina] = useState(16)
   const [paginaAtual, setPaginaAtual] = useState(1)
-  const totalClientes = clientesMock.length
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [clienteSelecionado, setClienteSelecionado] =
     useState<ICustomer | null>(null)
+
+  const fetchClientes = async () => {
+    try {
+      setLoading(true)
+      const response = await api.get<ICustomer[]>('/customers')
+      setClientes(Array.isArray(response.data) ? response.data : [])
+    } catch (error) {
+      setError('Erro ao carregar clientes.')
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchClientes()
+  }, [])
 
   const handleClientesPorPaginaChange = (
     event: React.ChangeEvent<HTMLSelectElement>,
@@ -36,12 +57,11 @@ export const Customer = ({ onSelectCliente }: CustomerProps) => {
   }
 
   const indexInicial = (paginaAtual - 1) * clientesPorPagina
-  const clientesExibidos = clientesMock.slice(
-    indexInicial,
-    indexInicial + clientesPorPagina,
-  )
+  const clientesExibidos = Array.isArray(clientes)
+    ? clientes.slice(indexInicial, indexInicial + clientesPorPagina)
+    : []
 
-  const totalPaginas = Math.ceil(totalClientes / clientesPorPagina)
+  const totalPaginas = Math.ceil(clientes.length / clientesPorPagina)
   const handlePageChange = (page: number) => setPaginaAtual(page)
 
   const handleEditClick = (cliente: ICustomer) => {
@@ -53,14 +73,13 @@ export const Customer = ({ onSelectCliente }: CustomerProps) => {
     setClienteSelecionado(cliente)
     setIsDeleteModalOpen(true)
   }
-  const confirmDelete = (cliente: ICustomer) => {
-    console.log('deletando cliente' + cliente)
+
+  if (loading) {
+    return <Spinner size="xl" />
   }
 
-  const saveEditedCliente = (updatedData: ICustomer) => {
-    console.log('Cliente atualizado:', updatedData)
-    setIsEditModalOpen(false)
-    setClienteSelecionado(null)
+  if (error) {
+    return <Text color="red.500">{error}</Text>
   }
 
   return (
@@ -68,7 +87,7 @@ export const Customer = ({ onSelectCliente }: CustomerProps) => {
       <Heading as="h2" size="md" mb={4}>
         <Flex justify="space-between" align="center" mb={5}>
           <p>
-            Clientes encontrados: <strong>{totalClientes}</strong>
+            Clientes encontrados: <strong>{clientes.length}</strong>
           </p>
           <Flex gap={2} alignItems="center">
             <p>Clientes por página: </p>
@@ -99,9 +118,9 @@ export const Customer = ({ onSelectCliente }: CustomerProps) => {
           <Card
             key={cliente.id}
             id={cliente.id}
-            nome={cliente.nome}
-            salario={cliente.salario}
-            empresa={cliente.empresa}
+            name={cliente.name}
+            salary={cliente.salary}
+            company_price={cliente.company_price}
             onDelete={() => handleDeleteClick(cliente)}
             onEdit={() => handleEditClick(cliente)}
             onSelect={() => onSelectCliente(cliente)}
@@ -143,8 +162,8 @@ export const Customer = ({ onSelectCliente }: CustomerProps) => {
         <ModalDeleteCustomer
           isOpen={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
-          onConfirm={() => confirmDelete(clienteSelecionado)}
-          clienteNome={clienteSelecionado.nome}
+          clienteId={clienteSelecionado.id}
+          clienteNome={clienteSelecionado.name}
         />
       )}
 
@@ -153,7 +172,6 @@ export const Customer = ({ onSelectCliente }: CustomerProps) => {
           isOpen={isEditModalOpen}
           onClose={() => setIsEditModalOpen(false)}
           cliente={clienteSelecionado}
-          onSave={saveEditedCliente}
         />
       )}
     </Box>

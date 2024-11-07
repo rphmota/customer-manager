@@ -1,8 +1,8 @@
-import { As, Box, Button, chakra, Icon } from '@chakra-ui/react'
+import { Box, Button, chakra, Icon } from '@chakra-ui/react'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 interface MenuButtonProps {
-  icon: As
+  icon: React.ElementType
   title: string
   path: string
   isOpen: boolean

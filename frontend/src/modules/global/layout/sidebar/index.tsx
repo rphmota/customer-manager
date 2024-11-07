@@ -1,12 +1,9 @@
-import { Box, Center, Flex, Image, Img, useMediaQuery } from '@chakra-ui/react'
+import { Box, Flex, Img, useMediaQuery } from '@chakra-ui/react'
 import Logo from '../../assets/logo.svg'
 
 import { LogoutButton } from './logout-button'
 import { DropdownMenu } from '../dropdown-menu'
-import { SectionMenu } from '../dropdown-menu/section-menu'
 import { useSidebar } from '../../context/sidebar-context'
-import { FaChevronRight, FaEdit, FaSearch } from 'react-icons/fa'
-import { ItemMenu } from '../dropdown-menu/item-menu'
 import { HomeButton } from './home-button'
 import { CustomerButton } from './customer-button'
 import { ProductButton } from './product-button'
@@ -20,41 +17,6 @@ export function Sidebar() {
   const handleClickCustomer = () => {
     navigate('/customer')
   }
-
-  const menusAtuais = [
-    {
-      name: 'Home',
-      icon: <FaEdit />,
-      itens: [
-        {
-          title: 'Solicitação de Viagem',
-          icon: <FaChevronRight />,
-          path: '/solicitacao-viagens/cadastrar',
-        },
-        {
-          title: 'Grande Operação',
-          icon: <FaChevronRight />,
-          path: '/grande-operacoes/cadastrar',
-        },
-      ],
-    },
-    {
-      name: 'Consultas',
-      icon: <FaSearch />,
-      itens: [
-        {
-          title: 'Solicitação de Viagem',
-          icon: <FaChevronRight />,
-          path: '/solicitacao-viagens',
-        },
-        {
-          title: 'Portaria de Viagem',
-          icon: <FaChevronRight />,
-          path: '/portaria-opm',
-        },
-      ],
-    },
-  ]
 
   return (
     <Flex

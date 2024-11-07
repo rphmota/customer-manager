@@ -4,11 +4,11 @@ import { Box, Button, Input, Heading, Flex } from '@chakra-ui/react'
 import { useNavigate } from 'react-router-dom'
 
 export const LoginPage = () => {
-  const [nome, setNome] = useState('')
+  const [name, setNome] = useState('')
   const navigate = useNavigate()
 
   const handleLogin = () => {
-    if (nome.trim()) {
+    if (name.trim()) {
       navigate('/home')
     }
   }
@@ -20,8 +20,8 @@ export const LoginPage = () => {
           Olá, seja bem-vindo!
         </Heading>
         <Input
-          placeholder="Digite o seu nome:"
-          value={nome}
+          placeholder="Digite o seu name:"
+          value={name}
           onChange={(e) => setNome(e.target.value)}
           mb={4}
         />

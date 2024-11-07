@@ -1,6 +1,7 @@
-import { Box, Center, Flex, Text, Select, Button } from '@chakra-ui/react'
+import { Box, Center, Flex, Text, Button } from '@chakra-ui/react'
 
 interface UserProfileProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   userProfileData: Record<string, any>
 }
 

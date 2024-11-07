@@ -13,7 +13,7 @@ export function Header() {
   const profileData = getProfileSession ? JSON.parse(getProfileSession) : {}
 
   const userProfileData = {
-    name: profileData.nome,
+    name: profileData.name,
   }
 
   return (

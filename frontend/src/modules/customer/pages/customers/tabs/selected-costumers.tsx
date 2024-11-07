@@ -41,9 +41,9 @@ export const SelectedCustomers = ({
           <Card
             key={cliente.id}
             id={cliente.id}
-            nome={cliente.nome}
-            salario={cliente.salario}
-            empresa={cliente.empresa}
+            name={cliente.name}
+            salary={cliente.salary}
+            company_price={cliente.company_price}
             onDelete={() => {}}
             onEdit={() => {}}
             onSelect={() => onDeselectCliente(cliente.id)}

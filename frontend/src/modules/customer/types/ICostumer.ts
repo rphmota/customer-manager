@@ -1,6 +1,6 @@
 export interface ICustomer {
   id: number
-  nome: string
-  salario: number
-  empresa: number
+  name: string
+  salary: number
+  company_price: number
 }
