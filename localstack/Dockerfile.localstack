@@ -1,0 +1,11 @@
+FROM localstack/localstack
+
+CMD sh -c ' \
+  until awslocal sqs list-queues > /dev/null 2>&1; do \
+    echo "Esperando o LocalStack iniciar..."; \
+    sleep 5; \
+  done; \
+  echo "LocalStack disponível, criando a fila customers-queue..."; \
+  awslocal sqs create-queue --queue-name customers-queue; \
+  exec localstack start; \
+'
