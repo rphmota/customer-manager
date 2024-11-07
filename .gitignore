@@ -5,8 +5,13 @@ build/
 
 # Ignora node_modules e diretórios de build específicos para backend e frontend
 backend/node_modules/
+backend/.docker/pgdata/
+
 backend/dist/
 backend/build/
+messaging/node_modules/
+messaging/dist/
+messaging/build/
 frontend/node_modules/
 frontend/dist/
 frontend/build/
