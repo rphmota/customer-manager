@@ -1,0 +1,104 @@
+version: "3.8"
+
+services:
+  localstack:
+    build:
+      context: ./localstack
+      dockerfile: Dockerfile.localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+      - AWS_DEFAULT_REGION=us-east-1
+    volumes:
+      - "./localstack:/localstack"
+      - "./localstack/init-scripts:/etc/localstack/init/ready.d"
+      - .aws:/root/.aws
+    networks:
+      - manager-network
+    #command: sh -c "sleep 20 && chmod +x /localstack/create-queue.sh && /localstack/create-queue.sh"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASS=postgres
+      - DATABASE_NAME=manager
+      - PORT=9090
+      - AWS_REGION=us-east-1
+      - AWS_SQS_QUEUE_URL=http://localstack:4566/000000000000/customers-queue
+      - AWS_ACCESS_KEY_ID=dummy
+      - AWS_SECRET_ACCESS_KEY=dummy
+
+    ports:
+      - "3000:9090"
+    depends_on:
+      - db
+    networks:
+      - manager-network
+    volumes:
+      - ./backend:/app
+      - .aws:/root/.aws
+
+  messaging:
+    build:
+      context: ./messaging
+      dockerfile: Dockerfile
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASS=postgres
+      - DATABASE_NAME=manager
+      - PORT=3001
+      - AWS_REGION=us-east-1
+      - AWS_SQS_QUEUE_URL=""
+      - AWS_ACCESS_KEY_ID=dummy
+      - AWS_SECRET_ACCESS_KEY=dummy
+    ports:
+      - "3001:9091"
+    depends_on:
+      - db
+      - localstack
+    networks:
+      - manager-network
+    volumes:
+      - ./messaging:/app
+      - .aws:/root/.aws
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - manager-network
+    volumes:
+      - ./frontend:/app
+
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: manager
+    volumes:
+      - ./backend/.docker/pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - manager-network
+
+networks:
+  manager-network:
+    driver: bridge
+
+volumes:
+  pgdata:
